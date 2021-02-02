@@ -1,7 +1,6 @@
 name: facebook_event
 description: Flutter plugin for Facebook App Events.
 version: 0.0.2
-authors: "Faisal_Kabir"
 homepage: https://github.com/faisal-kabir/facebook_event
 
 environment:
