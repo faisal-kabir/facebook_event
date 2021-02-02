@@ -10,6 +10,6 @@
 
 @implementation FacebookEventPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftFacebookEventPlugin registerWithRegistrar:registrar];
+    [SwiftFacebookAppEventsPlugin registerWithRegistrar:registrar];
 }
 @end

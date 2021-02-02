@@ -1,6 +1,7 @@
 name: facebook_event
 description: Flutter plugin for Facebook App Events, an app measurement solution that provides insight on app usage and user engagement in Facebook Analytics.
 version: 0.0.1
+authors: "Faisal Kabir"
 homepage: https://github.com/faisal-kabir/facebook_event
 
 environment:
@@ -27,7 +28,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.faisal.facebook_event.facebook_event
+        package: com.faisal.flutter.facebook_event
         pluginClass: FacebookEventPlugin
       ios:
         pluginClass: FacebookEventPlugin

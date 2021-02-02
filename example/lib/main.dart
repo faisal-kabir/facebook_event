@@ -4,44 +4,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:facebook_event/facebook_event.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FacebookEvent.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
+class MyApp extends StatelessWidget {
+  static final facebookAppEvents = FacebookEvent();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,7 +16,35 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FutureBuilder(
+                future: facebookAppEvents.getAnonymousId(),
+                builder: (context, snapshot) {
+                  final id = snapshot.data ?? '???';
+                  return Text('Anonymous ID: $id');
+                },
+              ),
+              MaterialButton(
+                child: Text("Click me!"),
+                onPressed: () {
+                  facebookAppEvents.logEvent(
+                    name: 'button_clicked',
+                    parameters: {
+                      'button_id': 'the_clickme_button',
+                    },
+                  );
+                },
+              ),
+              MaterialButton(
+                child: Text("Test purchase!"),
+                onPressed: () {
+                  facebookAppEvents.logPurchase(amount: 1, currency: "USD");
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
