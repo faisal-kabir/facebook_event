@@ -1,8 +1,8 @@
-# facebook_events
+# facebook_event
 
-[![pub package](https://img.shields.io/pub/v/facebook_app_events.svg)](https://pub.dartlang.org/packages/facebook_app_events)
+[![pub package](https://img.shields.io/pub/v/facebook_event.svg)](https://pub.dartlang.org/packages/facebook_app_events)
 
-Flutter plugin for [Facebook  Events](https://developers.facebook.com/docs/app-events) and Analytics.
+Flutter plugin for [Facebook  Event](https://developers.facebook.com/docs/app-events) and Analytics.
 
 > Facebook Events is a feature that can help you organize social gatherings via Facebook. You get a dedicated page for providing all the details of your event plus a range of tools to notify friends about it and keep track of who's going. Facebook Events are different from Facebook Groups and Facebook Pages.
 
