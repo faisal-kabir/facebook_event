@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -10,11 +11,10 @@ const channelName = 'com.faisal/facebook_event';
 class FacebookEvent {
   static const _channel = MethodChannel(channelName);
 
-  // See: https://github.com/facebook/facebook-android-sdk/blob/master/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.java
+
   static const eventNameActivatedApp = 'fb_mobile_activate_app';
   static const eventNameDeactivatedApp = 'fb_mobile_deactivate_app';
-  static const eventNameCompletedRegistration =
-      'fb_mobile_complete_registration';
+  static const eventNameCompletedRegistration = 'fb_mobile_complete_registration';
   static const eventNameViewedContent = 'fb_mobile_content_view';
   static const eventNameRated = 'fb_mobile_rate';
   static const eventNameInitiatedCheckout = 'fb_mobile_initiated_checkout';
@@ -241,6 +241,13 @@ class FacebookEvent {
     };
     return _channel.invokeMethod<void>('logPurchase', _filterOutNulls(args));
   }
+
+  Future<String> getAndroidHashKey() {
+    if(Platform.isAndroid)
+      return _channel.invokeMethod<void>('printHashKey');
+  }
+
+
 
   Future<void> logInitiatedCheckout({
     @required double totalPrice,

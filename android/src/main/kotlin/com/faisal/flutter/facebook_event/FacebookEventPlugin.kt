@@ -1,6 +1,10 @@
 package com.faisal.flutter.facebook_event
 
+import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.annotation.NonNull
 import com.facebook.FacebookSdk
@@ -14,6 +18,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +29,8 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var appEventsLogger: AppEventsLogger
   private lateinit var anonymousId: String
 
+  private lateinit var context: Context
+
   private val logTag = "FacebookAppEvents"
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -30,6 +38,7 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this)
     appEventsLogger = AppEventsLogger.newLogger(flutterPluginBinding.applicationContext)
     anonymousId = AppEventsLogger.getAnonymousAppDeviceGUID(flutterPluginBinding.applicationContext)
+    context=flutterPluginBinding.applicationContext
   }
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
@@ -50,9 +59,29 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
       "setDataProcessingOptions" -> handleSetDataProcessingOptions(call, result)
       "getAnonymousId" -> handleGetAnonymousId(call, result)
       "logPurchase" -> handlePurchased(call, result)
+      "printHashKey" -> printHashKey(context, result)
       else -> result.notImplemented()
     }
   }
+  private fun printHashKey(pContext: Context, result: Result) {
+    var TAG : String = "Hash Key"
+    lateinit var hashKey : String
+    try {
+      val info: PackageInfo = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES)
+      for (signature in info.signatures) {
+        val md: MessageDigest = MessageDigest.getInstance("SHA")
+        md.update(signature.toByteArray())
+        hashKey = String(Base64.encode(md.digest(), 0))
+        Log.i(TAG, "printHashKey() Hash Key: $hashKey")
+      }
+    } catch (e: NoSuchAlgorithmException) {
+      Log.e(TAG, "printHashKey()", e)
+    } catch (e: Exception) {
+      Log.e(TAG, "printHashKey()", e)
+    }
+    result.success(hashKey)
+  }
+
   private fun handleClearUserData(call: MethodCall, result: Result) {
     AppEventsLogger.clearUserData()
     result.success(null)
