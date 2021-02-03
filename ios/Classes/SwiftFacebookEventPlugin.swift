@@ -47,8 +47,26 @@ public class SwiftFacebookAppEventsPlugin: NSObject, FlutterPlugin {
         case "logPurchase":
             handlePurchased(call, result: result)
             break
+        case "logAchieveLevelEvent":
+            logAchieveLevelEvent(call, result: result)
+            break
         case "getAnonymousId":
             handleHandleGetAnonymousId(call, result: result)
+            break
+        case "logAddPaymentInfoEvent":
+            logAddPaymentInfoEvent(call, result: result)
+            break
+        case "logAddToCartEvent":
+            logAddToCartEvent(call, result: result)
+            break
+        case "logCompleteRegistrationEvent":
+            logCompleteRegistrationEvent(call, result: result)
+            break
+        case "logInitiateCheckoutEvent":
+            logInitiateCheckoutEvent(call, result: result)
+            break
+        case "logRateEvent":
+            logRateEvent(call, result: result)
             break
         default:
             result(FlutterMethodNotImplemented)
@@ -164,6 +182,76 @@ public class SwiftFacebookAppEventsPlugin: NSObject, FlutterPlugin {
         let parameters = arguments["parameters"] as? [String: Any] ?? [String: Any]()
         AppEvents.logPurchase(amount, currency: currency, parameters: parameters)
 
+        result(nil)
+    }
+
+    private func logAchieveLevelEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let parameters = [
+            AppEvents.ParameterName.level.rawValue: arguments["level"] as! String
+        ]
+
+        AppEvents.logEvent(.achievedLevel, parameters: parameters)
+        result(nil)
+    }
+
+    private func logAddPaymentInfoEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let parameters = [
+            "success": arguments["success"] as! Bool ? 1 : 0
+        ]
+        AppEvents.logEvent(.addedPaymentInfo, parameters: parameters)
+        result(nil)
+    }
+    
+    private func logAddToCartEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let parameters = [
+            AppEvents.ParameterName.content.rawValue: arguments["contentData"] as!String,
+            AppEvents.ParameterName.contentID.rawValue: arguments["contentId"] as!String,
+            AppEvents.ParameterName.contentType.rawValue: arguments["contentType"] as!String,
+            AppEvents.ParameterName.currency.rawValue: arguments["currency"] as!String
+        ]
+
+        AppEvents.logEvent(.addedToCart, valueToSum: arguments["price"] as!Double, parameters: parameters)
+        result(nil)
+    }
+    private func logCompleteRegistrationEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let parameters = [
+            AppEvents.ParameterName.registrationMethod.rawValue:arguments["registrationMethod"] as!String
+        ]
+
+        AppEvents.logEvent(.completedRegistration, parameters: parameters)
+        result(nil)
+    }
+    private func logInitiateCheckoutEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let totalPrice = arguments["totalPrice"] as! Double
+        let parameters : [String:Any] = [
+                AppEvents.ParameterName.content.rawValue: arguments["contentData"] as!String,
+                AppEvents.ParameterName.contentID.rawValue: arguments["contentId"] as!String,
+                AppEvents.ParameterName.contentType.rawValue: arguments["contentType"] as!String,
+                AppEvents.ParameterName.currency.rawValue: arguments["currency"] as!String,
+                "itemCount": arguments["numItems"]as? String ?? "1",
+                AppEvents.ParameterName.paymentInfoAvailable.rawValue: NSNumber(value: arguments["paymentInfoAvailable"] as! Bool ? 1 : 0),
+            ]
+
+        AppEvents.logEvent(.initiatedCheckout, valueToSum: totalPrice, parameters: parameters)
+        result(nil)
+    }
+    private func logRateEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as? [String: Any] ?? [String: Any]()
+        let maxRatingValue = arguments["maxRatingValue"] as! Int32
+        let ratingGiven = arguments["ratingGiven"] as! Double
+        let parameters : [String:Any] = [
+                AppEvents.ParameterName.content.rawValue: arguments["contentData"] as!String,
+                AppEvents.ParameterName.contentID.rawValue: arguments["contentId"] as!String,
+                AppEvents.ParameterName.contentType.rawValue: arguments["contentType"] as!String,
+                AppEvents.ParameterName.maxRatingValue.rawValue: NSNumber(value:maxRatingValue)
+            ]
+
+            AppEvents.logEvent(.rated, valueToSum: ratingGiven, parameters: parameters)
         result(nil)
     }
 }

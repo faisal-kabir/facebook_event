@@ -13,13 +13,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   static final facebookEvent = FacebookEvent();
-  String hashKey='';
+  String hashKey='Null';
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getHashKey();
+    //getHashKey();
   }
 
   @override
@@ -40,7 +40,10 @@ class _MyAppState extends State<MyApp> {
                   return Text('Anonymous ID: $id');
                 },
               ),
-              Text(hashKey),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(hashKey,textAlign: TextAlign.center,),
+              ),
               MaterialButton(
                 child: Text("Click me!"),
                 onPressed: () {
@@ -49,6 +52,14 @@ class _MyAppState extends State<MyApp> {
                     parameters: {
                       'button_id': 'the_clickme_button',
                     },
+                  );
+                },
+              ),
+              MaterialButton(
+                child: Text("Log AchieveLevelEvent"),
+                onPressed: () {
+                  facebookEvent.logAchieveLevelEvent(
+                    level: 'Payment',
                   );
                 },
               ),

@@ -242,9 +242,95 @@ class FacebookEvent {
     return _channel.invokeMethod<void>('logPurchase', _filterOutNulls(args));
   }
 
+  Future<void> logAchieveLevelEvent({
+    @required String level,
+  }) {
+    final args = <String, dynamic>{
+      'level': level,
+    };
+    return _channel.invokeMethod<void>('logAchieveLevelEvent', _filterOutNulls(args));
+  }
+
   Future<String> getAndroidHashKey() {
     if(Platform.isAndroid)
       return _channel.invokeMethod('printHashKey');
+    else
+      return null;
+  }
+
+  Future<void> logAddPaymentInfoEvent({@required bool success}) {
+    final args = <String, dynamic>{
+    'success': success,
+    };
+    return _channel.invokeMethod('logAddPaymentInfoEvent',_filterOutNulls(args));
+  }
+
+  Future<void> logAddToCartEvent(
+      {
+        @required double price,
+        String contentData,
+        String contentId,
+        String contentType,
+        String currency='USD',
+      }) {
+      final args = <String, dynamic>{
+          'price': price,
+          'contentData': contentData,
+          'contentId': contentId,
+          'contentType': contentType,
+          'currency': currency,
+      };
+    return _channel.invokeMethod('logAddToCartEvent',_filterOutNulls(args));
+  }
+
+  Future<void> logCompleteRegistrationEvent(
+      {
+        @required String registrationMethod,
+      }) {
+      final args = <String, dynamic>{
+          'registrationMethod': registrationMethod,
+      };
+    return _channel.invokeMethod('logCompleteRegistrationEvent',_filterOutNulls(args));
+  }
+
+  Future<void> logInitiateCheckoutEvent(
+      {
+        @required double totalPrice,
+        String contentData,
+        String contentId,
+        String contentType,
+        String currency='USD',
+        int numItems=1,
+        bool paymentInfoAvailable=false
+      }) {
+      final args = <String, dynamic>{
+        'numItems': numItems,
+        'totalPrice': totalPrice,
+        'contentData': contentData,
+        'contentId': contentId,
+        'contentType': contentType,
+        'currency': currency,
+        'paymentInfoAvailable': paymentInfoAvailable,
+      };
+    return _channel.invokeMethod('logInitiateCheckoutEvent',_filterOutNulls(args));
+  }
+
+  Future<void> logRateEvent(
+      {
+        @required double ratingGiven,
+        String contentData,
+        String contentId,
+        String contentType,
+        int maxRatingValue=5,
+      }) {
+      final args = <String, dynamic>{
+        'maxRatingValue': maxRatingValue,
+        'ratingGiven': ratingGiven,
+        'contentData': contentData,
+        'contentId': contentId,
+        'contentType': contentType,
+      };
+    return _channel.invokeMethod('logRateEvent',_filterOutNulls(args));
   }
 
 

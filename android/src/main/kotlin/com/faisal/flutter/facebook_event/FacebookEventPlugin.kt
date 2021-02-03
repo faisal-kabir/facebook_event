@@ -10,18 +10,17 @@ import androidx.annotation.NonNull
 import com.facebook.FacebookSdk
 import com.facebook.GraphRequest
 import com.facebook.GraphResponse
+import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 /** FacebookEventPlugin */
 class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
@@ -60,28 +59,16 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
       "getAnonymousId" -> handleGetAnonymousId(call, result)
       "logPurchase" -> handlePurchased(call, result)
       "printHashKey" -> printHashKey(context, result)
+      "logAchieveLevelEvent" -> logAchieveLevelEvent(call, result)
+      "logAddPaymentInfoEvent" -> logAddPaymentInfoEvent(call, result)
+      "logAddToCartEvent" -> logAddToCartEvent(call, result)
+      "logCompleteRegistrationEvent" -> logCompleteRegistrationEvent(call, result)
+      "logInitiateCheckoutEvent" -> logInitiateCheckoutEvent(call, result)
+      "logRateEvent" -> logRateEvent(call, result)
       else -> result.notImplemented()
     }
   }
-  private fun printHashKey(pContext: Context, result: Result) {
-    var TAG : String = "Hash Key"
-    lateinit var hashKey : String
-    try {
-      val info: PackageInfo = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES)
-      for (signature in info.signatures) {
-        val md: MessageDigest = MessageDigest.getInstance("SHA")
-        md.update(signature.toByteArray())
-        hashKey = String(Base64.encode(md.digest(), 0))
-        Log.i(TAG, "printHashKey() Hash Key: $hashKey")
-      }
-    } catch (e: NoSuchAlgorithmException) {
-      Log.e(TAG, "printHashKey()", e)
-    } catch (e: Exception) {
-      Log.e(TAG, "printHashKey()", e)
-    }
-    result.success(hashKey)
 
-  }
 
   private fun handleClearUserData(call: MethodCall, result: Result) {
     AppEventsLogger.clearUserData()
@@ -241,6 +228,77 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
     val parameterBundle = createBundleFromMap(parameters) ?: Bundle()
 
     appEventsLogger.logPurchase(amount, currency, parameterBundle)
+    result.success(null)
+  }
+
+  private fun printHashKey(pContext: Context, result: Result) {
+    lateinit var hashKey : String
+    try {
+      val info: PackageInfo = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES)
+      for (signature in info.signatures) {
+        val md: MessageDigest = MessageDigest.getInstance("SHA")
+        md.update(signature.toByteArray())
+        hashKey = String(Base64.encode(md.digest(), 0))
+      }
+    } catch (e: NoSuchAlgorithmException) {
+      Log.d("printHashKey()", e.message)
+    } catch (e: Exception) {
+      Log.d("printHashKey()", e.message)
+    }
+    result.success(hashKey)
+
+  }
+
+  private fun logAchieveLevelEvent(call: MethodCall, result: Result) {
+    val params = Bundle()
+    params.putString(AppEventsConstants.EVENT_PARAM_LEVEL, call.argument("level") as? String)
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_ACHIEVED_LEVEL, params)
+    result.success(null)
+  }
+  private fun logAddPaymentInfoEvent(call: MethodCall, result: Result) {
+    val params = Bundle()
+    params.putInt(AppEventsConstants.EVENT_PARAM_SUCCESS, if (call.argument("success") as? Boolean == true) 1 else 0)
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_ADDED_PAYMENT_INFO, params)
+    result.success(null)
+  }
+  private fun logAddToCartEvent(call: MethodCall, result: Result) {
+    val params = Bundle()
+    var price : Double = call.argument<Double>("price") as Double
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT, call.argument("contentData") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, call.argument("contentId") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, call.argument("contentType") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, call.argument("currency") as? String)
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_ADDED_TO_CART, price, params)
+    result.success(null)
+  }
+  private fun logCompleteRegistrationEvent(call: MethodCall, result: Result) {
+    val params = Bundle()
+    params.putString(AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD, call.argument("registrationMethod") as? String);
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION, params);
+    result.success(null)
+  }
+  private fun logInitiateCheckoutEvent(call: MethodCall, result: Result) {
+    val params = Bundle()
+    var numItems : Int = call.argument<Int>("numItems") as Int
+    var totalPrice : Double = call.argument<Double>("totalPrice") as Double
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT, call.argument("contentData") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, call.argument("contentId") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, call.argument("contentType") as? String)
+    params.putInt(AppEventsConstants.EVENT_PARAM_NUM_ITEMS, numItems)
+    params.putInt(AppEventsConstants.EVENT_PARAM_PAYMENT_INFO_AVAILABLE, if (call.argument("paymentInfoAvailable") as? Boolean == true) 1 else 0)
+    params.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, call.argument("currency") as? String)
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_INITIATED_CHECKOUT, totalPrice, params)
+    result.success(null)
+  }
+  private fun logRateEvent(call: MethodCall, result: Result) {
+    var maxRatingValue : Int = call.argument<Int>("maxRatingValue") as Int
+    var ratingGiven : Double = call.argument<Double>("ratingGiven") as Double
+    val params = Bundle()
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT, call.argument("contentData") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, call.argument("contentId") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, call.argument("contentType") as? String)
+    params.putInt(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, maxRatingValue)
+    appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_RATED, ratingGiven, params)
     result.success(null)
   }
 }
