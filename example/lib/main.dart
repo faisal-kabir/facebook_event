@@ -6,8 +6,22 @@ import 'package:facebook_event/facebook_event.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  static final facebookAppEvents = FacebookEvent();
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static final facebookEvent = FacebookEvent();
+  String hashKey='';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getHashKey();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,16 +34,17 @@ class MyApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FutureBuilder(
-                future: facebookAppEvents.getAnonymousId(),
+                future: facebookEvent.getAnonymousId(),
                 builder: (context, snapshot) {
                   final id = snapshot.data ?? '???';
                   return Text('Anonymous ID: $id');
                 },
               ),
+              Text(hashKey),
               MaterialButton(
                 child: Text("Click me!"),
                 onPressed: () {
-                  facebookAppEvents.logEvent(
+                  facebookEvent.logEvent(
                     name: 'button_clicked',
                     parameters: {
                       'button_id': 'the_clickme_button',
@@ -40,7 +55,7 @@ class MyApp extends StatelessWidget {
               MaterialButton(
                 child: Text("Test purchase!"),
                 onPressed: () {
-                  facebookAppEvents.logPurchase(amount: 1, currency: "USD");
+                  facebookEvent.logPurchase(amount: 1, currency: "USD");
                 },
               ),
             ],
@@ -48,5 +63,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void getHashKey()async{
+    hashKey= await facebookEvent.getAndroidHashKey();
+    setState(() {
+
+    });
   }
 }

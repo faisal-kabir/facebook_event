@@ -80,6 +80,7 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
       Log.e(TAG, "printHashKey()", e)
     }
     result.success(hashKey)
+
   }
 
   private fun handleClearUserData(call: MethodCall, result: Result) {

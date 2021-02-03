@@ -244,7 +244,7 @@ class FacebookEvent {
 
   Future<String> getAndroidHashKey() {
     if(Platform.isAndroid)
-      return _channel.invokeMethod<void>('printHashKey');
+      return _channel.invokeMethod('printHashKey');
   }
 
 
