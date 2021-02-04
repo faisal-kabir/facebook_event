@@ -6,7 +6,9 @@ Pod::Spec.new do |s|
   s.name             = 'facebook_event'
   s.version          = '0.0.1'
   s.summary          = 'A new flutter plugin project.'
-  s.description      = <<-DESC A new flutter plugin project. DESC
+  s.description      = <<-DESC
+  A new flutter plugin project.
+    DESC
   s.homepage         = 'https://github.com/faisal-kabir/facebook_event'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Faisal Kabir' => 'faisalkabir95@gmail.com' }
