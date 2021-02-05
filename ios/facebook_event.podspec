@@ -5,10 +5,10 @@
 Pod::Spec.new do |s|
   s.name             = 'facebook_event'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'Flutter plugin for Facebook Events and Analytics'
   s.description      = <<-DESC
-  A new flutter plugin project.
-    DESC
+Flutter plugin for Facebook Events and Analytics
+                       DESC
   s.homepage         = 'https://github.com/faisal-kabir/facebook_event'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Faisal Kabir' => 'faisalkabir95@gmail.com' }
@@ -16,11 +16,9 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'FBSDKCoreKit', '~> 8.1.0'
+  s.dependency 'FBSDKCoreKit', '~> 8.2.0'
+  s.swift_version       = '4.0'
 
-  s.platform = :ios, '9.0'
-
-  # Flutter.framework does not contain a i386 slice.
+  s.ios.deployment_target = '8.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.swift_version = '5.0'
 end
