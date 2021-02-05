@@ -219,7 +219,9 @@ public class SwiftFacebookAppEventsPlugin: NSObject, FlutterPlugin {
     private func logCompleteRegistrationEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let arguments = call.arguments as? [String: Any] ?? [String: Any]()
         let parameters = [
-            AppEvents.ParameterName.registrationMethod.rawValue:arguments["registrationMethod"] as!String
+            AppEvents.ParameterName.registrationMethod.rawValue:arguments["registrationMethod"] as!String,
+            "fb_mobile_complete_registration":arguments["name"] as!String,
+            "fb_currency":arguments["currency"] as!String
         ]
 
         AppEvents.logEvent(.completedRegistration, parameters: parameters)

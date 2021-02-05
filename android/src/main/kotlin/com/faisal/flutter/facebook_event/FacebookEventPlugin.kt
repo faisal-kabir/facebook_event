@@ -273,7 +273,9 @@ class FacebookEventPlugin: FlutterPlugin, MethodCallHandler {
   }
   private fun logCompleteRegistrationEvent(call: MethodCall, result: Result) {
     val params = Bundle()
-    params.putString(AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD, call.argument("registrationMethod") as? String);
+    params.putString(AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD, call.argument("registrationMethod") as? String)
+    params.putString(AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION, call.argument("name") as? String)
+    params.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, call.argument("currency") as? String)
     appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION, params);
     result.success(null)
   }

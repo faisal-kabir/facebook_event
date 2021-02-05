@@ -8,10 +8,10 @@ import FBSDKCoreKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GeneratedPluginRegistrant.register(with: self)
     ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
     AppEvents.activateApp()
     AppEvents.logEvent(AppEvents.Name.init(rawValue: "Opened App Main VC"))
+    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

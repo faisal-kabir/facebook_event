@@ -22,7 +22,7 @@ void main() {
     test('logEvent log events', () async {
       await facebookEvent.logEvent(
         name: 'test-event',
-        parameters: <String, dynamic>{'a': 'b'},
+        body: <String, dynamic>{'a': 'b'},
       );
       expect(
         methodCall,

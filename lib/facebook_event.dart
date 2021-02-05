@@ -12,41 +12,12 @@ class FacebookEvent {
   static const _channel = MethodChannel(channelName);
 
 
-  static const eventNameActivatedApp = 'fb_mobile_activate_app';
-  static const eventNameDeactivatedApp = 'fb_mobile_deactivate_app';
-  static const eventNameCompletedRegistration = 'fb_mobile_complete_registration';
-  static const eventNameViewedContent = 'fb_mobile_content_view';
-  static const eventNameRated = 'fb_mobile_rate';
-  static const eventNameInitiatedCheckout = 'fb_mobile_initiated_checkout';
-
-  static const _paramNameValueToSum = "_valueToSum";
-  static const paramNameCurrency = "fb_currency";
-  static const paramNameRegistrationMethod = "fb_registration_method";
-  static const paramNamePaymentInfoAvailable = "fb_payment_info_available";
-  static const paramNameNumItems = "fb_num_items";
-  static const paramValueYes = "1";
-  static const paramValueNo = "0";
-
-  /// Parameter key used to specify a generic content type/family for the logged event, e.g.
-  /// "music", "photo", "video".  Options to use will vary depending on the nature of the app.
-  static const paramNameContentType = "fb_content_type";
-
-  /// Parameter key used to specify data for the one or more pieces of content being logged about.
-  /// Data should be a JSON encoded string.
-  /// Example:
-  ///   "[{\"id\": \"1234\", \"quantity\": 2, \"item_price\": 5.99}, {\"id\": \"5678\", \"quantity\": 1, \"item_price\": 9.99}]"
-  static const paramNameContent = "fb_content";
-
-  /// Parameter key used to specify an ID for the specific piece of content being logged about.
-  /// This could be an EAN, article identifier, etc., depending on the nature of the app.
-  static const paramNameContentId = "fb_content_id";
-
-  /// Clears the current user data
+  /// Clear user data
   Future<void> clearUserData() {
     return _channel.invokeMethod<void>('clearUserData');
   }
 
-  /// Clears the currently set user id.
+  /// Clear user id.
   Future<void> clearUserID() {
     return _channel.invokeMethod<void>('clearUserID');
   }
@@ -56,34 +27,32 @@ class FacebookEvent {
     return _channel.invokeMethod<void>('flush');
   }
 
-  /// Returns the app ID this logger was configured to log to.
+  /// This method returns the app ID.
   Future<String> getApplicationId() {
     return _channel.invokeMethod<String>('getApplicationId');
   }
 
+  ///Each app/device pair gets an GUID that is sent back with App Events and persisted with this app/device pair.
   Future<String> getAnonymousId() {
     return _channel.invokeMethod<String>('getAnonymousId');
   }
 
-  /// Log an app event with the specified [name] and the supplied [parameters] value.
+  /// Log an app event with the specified name and set of parameters.
   Future<void> logEvent({
     @required String name,
-    Map<String, dynamic> parameters,
+    Map<String, dynamic> body,
     double valueToSum,
   }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'name': name,
-      'parameters': parameters,
-      _paramNameValueToSum: valueToSum,
+      'parameters': body,
+      '_valueToSum': valueToSum,
     };
 
-    return _channel.invokeMethod<void>('logEvent', _filterOutNulls(args));
+    return _channel.invokeMethod<void>('logEvent', data);
   }
 
-  /// Sets user data to associate with all app events.
-  /// All user data are hashed and used to match Facebook user from this
-  /// instance of an application. The user data will be persisted between
-  /// application instances.
+  /// Sets user data to associate with all events.
   Future<void> setUserData({
     String email,
     String firstName,
@@ -96,7 +65,7 @@ class FacebookEvent {
     String zip,
     String country,
   }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
@@ -109,148 +78,133 @@ class FacebookEvent {
       'country': country,
     };
 
-    return _channel.invokeMethod<void>('setUserData', args);
+    return _channel.invokeMethod<void>('setUserData', data);
   }
+
 
   /// Logs an app event that tracks that the application was open via Push Notification.
   Future<void> logPushNotificationOpen({
     @required Map<String, dynamic> payload,
     String action,
   }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'payload': payload,
       'action': action,
     };
 
-    return _channel.invokeMethod<void>('logPushNotificationOpen', args);
+    return _channel.invokeMethod<void>('logPushNotificationOpen', data);
   }
 
-  /// Sets a user [id] to associate with all app events.
-  /// This can be used to associate your own user id with the
-  /// app events logged from this instance of an application.
-  /// The user ID will be persisted between application instances.
+  /// Sets a user [id] to associate with all events.
   Future<void> setUserID(String id) {
     return _channel.invokeMethod<void>('setUserID', id);
   }
 
-  /// Update user properties as provided by a map of [parameters]
+  /// Update user properties as provided by a map of [body]
   Future<void> updateUserProperties({
-    @required Map<String, dynamic> parameters,
+    @required Map<String, dynamic> body,
     String applicationId,
   }) {
-    final args = <String, dynamic>{
-      'parameters': parameters,
+    final data = <String, dynamic>{
+      'parameters': body,
       'applicationId': applicationId,
     };
 
-    return _channel.invokeMethod<void>('updateUserProperties', args);
+    return _channel.invokeMethod<void>('updateUserProperties', data);
   }
 
-  // Below are shorthand implementations of the predefined app event constants
-
-  /// Log this event when an app is being activated.
-  ///
-  /// See: https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventsconstants.html/#eventnameactivatedapp
+  ///This event when an app is being activated.
   Future<void> logActivatedApp() {
-    return logEvent(name: eventNameActivatedApp);
+    return logEvent(name: 'fb_mobile_activate_app');
   }
 
-  /// Log this event when an app is being deactivated.
-  ///
-  /// See: https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventsconstants.html/#eventnamedeactivatedapp
+  /// This event when an app is being deactivated.
   Future<void> logDeactivatedApp() {
-    return logEvent(name: eventNameDeactivatedApp);
+    return logEvent(name: 'fb_mobile_deactivate_app');
   }
+  
 
-  /// Log this event when the user has completed registration with the app.
-  /// Parameter [registrationMethod] is used to specify the method the user has
-  /// used to register for the app, e.g. "Facebook", "email", "Google", etc.
-  /// See: https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventsconstants.html/#eventnamecompletedregistration
-  Future<void> logCompletedRegistration({String registrationMethod}) {
+
+  ///
+  Future<void> logContactEvent({
+    @required String contact,
+  }) {
     return logEvent(
-      name: eventNameCompletedRegistration,
-      parameters: {
-        paramNameRegistrationMethod: registrationMethod,
+      name: 'Contact',
+      body: {
+        'button_id': contact,
       },
     );
   }
 
-  /// Log this event when the user has rated an item in the app.
-  ///
-  /// See: https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventsconstants.html/#eventnamerated
-  Future<void> logRated({double valueToSum}) {
-    return logEvent(
-      name: eventNameRated,
-      valueToSum: valueToSum,
-    );
-  }
-
-  /// Log this event when the user has viewed a form of content in the app.
-  ///
-  /// See: https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventsconstants.html/#eventnameviewedcontent
+  /// This event when the user has viewed a form of content in the app.
+  /*
+   * Parameter key used to specify data for the one or more pieces of content being logged about.
+   * Data should be a JSON encoded string. Example: "[{\"id\": \"1234\", \"quantity\": 2,
+   * \"item_price\": 5.99}, {\"id\": \"5678\", \"quantity\": 1, \"item_price\": 9.99}]"
+   */
   Future<void> logViewContent({
     Map<String, dynamic> content,
     String id,
     String type,
   }) {
     return logEvent(
-      name: eventNameViewedContent,
-      parameters: {
-        paramNameContent: content,
-        paramNameContentId: id,
-        paramNameContentType: type,
+      name: 'fb_mobile_content_view',
+      body: {
+        'fb_content': content,
+        'fb_content_id': id,
+        'fb_content_type': type,
       },
     );
   }
 
   /// Re-enables auto logging of app events after user consent
-  /// if disabled for GDPR-compliance.
-  ///
-  /// See: https://developers.facebook.com/docs/app-events/gdpr-compliance
   Future<void> setAutoLogAppEventsEnabled(bool enabled) {
     return _channel.invokeMethod<void>('setAutoLogAppEventsEnabled', enabled);
   }
 
   /// Set Data Processing Options
-  /// This is needed for California Consumer Privacy Act (CCPA) compliance
-  ///
-  /// See: https://developers.facebook.com/docs/marketing-apis/data-processing-options
   Future<void> setDataProcessingOptions(
       List<String> options, {
         int country,
         int state,
       }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'options': options,
       'country': country,
       'state': state,
     };
 
-    return _channel.invokeMethod<void>('setDataProcessingOptions', args);
+    return _channel.invokeMethod<void>('setDataProcessingOptions', data);
   }
 
+
+  ///Logs a purchase event with Facebook explicitly, in the specified amount and with the specified currency.
   Future<void> logPurchase({
     @required double amount,
     @required String currency,
-    Map<String, dynamic> parameters,
+    Map<String, dynamic> body,
   }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'amount': amount,
       'currency': currency,
-      'parameters': parameters,
+      'parameters': body,
     };
-    return _channel.invokeMethod<void>('logPurchase', _filterOutNulls(args));
+    return _channel.invokeMethod<void>('logPurchase', data);
   }
+
 
   Future<void> logAchieveLevelEvent({
     @required String level,
   }) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
       'level': level,
     };
-    return _channel.invokeMethod<void>('logAchieveLevelEvent', _filterOutNulls(args));
+    return _channel.invokeMethod<void>('logAchieveLevelEvent', data);
   }
 
+  ///Android apps must be digitally signed with a release key before you can upload them to the store.
+  ///This method helps to get the release key for setup android in facebook portal
   Future<String> getAndroidHashKey() {
     if(Platform.isAndroid)
       return _channel.invokeMethod('printHashKey');
@@ -258,13 +212,15 @@ class FacebookEvent {
       return null;
   }
 
+  /// This event use when compete a successful payment
   Future<void> logAddPaymentInfoEvent({@required bool success}) {
-    final args = <String, dynamic>{
+    final data = <String, dynamic>{
     'success': success,
     };
-    return _channel.invokeMethod('logAddPaymentInfoEvent',_filterOutNulls(args));
+    return _channel.invokeMethod('logAddPaymentInfoEvent',data);
   }
 
+  ///This event uses when the addition of an item to a shopping cart or basket.
   Future<void> logAddToCartEvent(
       {
         @required double price,
@@ -273,26 +229,34 @@ class FacebookEvent {
         String contentType,
         String currency='USD',
       }) {
-      final args = <String, dynamic>{
+      final data = <String, dynamic>{
           'price': price,
           'contentData': contentData,
           'contentId': contentId,
           'contentType': contentType,
           'currency': currency,
       };
-    return _channel.invokeMethod('logAddToCartEvent',_filterOutNulls(args));
+    return _channel.invokeMethod('logAddToCartEvent',data);
   }
 
+  /// This event when the user has completed registration with the app.
+  /// Parameter [registrationMethod] is used to specify the method the user has
   Future<void> logCompleteRegistrationEvent(
       {
         @required String registrationMethod,
+        @required String name,
+        @required String currency
       }) {
-      final args = <String, dynamic>{
+      final data = <String, dynamic>{
           'registrationMethod': registrationMethod,
+          'name': name,
+          'currency': currency,
       };
-    return _channel.invokeMethod('logCompleteRegistrationEvent',_filterOutNulls(args));
+    return _channel.invokeMethod('logCompleteRegistrationEvent',data);
   }
 
+
+  ///The event for the checkout process. For example, clicking a Checkout button.
   Future<void> logInitiateCheckoutEvent(
       {
         @required double totalPrice,
@@ -303,7 +267,7 @@ class FacebookEvent {
         int numItems=1,
         bool paymentInfoAvailable=false
       }) {
-      final args = <String, dynamic>{
+      final data = <String, dynamic>{
         'numItems': numItems,
         'totalPrice': totalPrice,
         'contentData': contentData,
@@ -312,8 +276,9 @@ class FacebookEvent {
         'currency': currency,
         'paymentInfoAvailable': paymentInfoAvailable,
       };
-    return _channel.invokeMethod('logInitiateCheckoutEvent',_filterOutNulls(args));
+    return _channel.invokeMethod('logInitiateCheckoutEvent',data);
   }
+
 
   Future<void> logRateEvent(
       {
@@ -323,54 +288,14 @@ class FacebookEvent {
         String contentType,
         int maxRatingValue=5,
       }) {
-      final args = <String, dynamic>{
+      final data = <String, dynamic>{
         'maxRatingValue': maxRatingValue,
         'ratingGiven': ratingGiven,
         'contentData': contentData,
         'contentId': contentId,
         'contentType': contentType,
       };
-    return _channel.invokeMethod('logRateEvent',_filterOutNulls(args));
+    return _channel.invokeMethod('logRateEvent',data);
   }
-
-
-
-  Future<void> logInitiatedCheckout({
-    @required double totalPrice,
-    @required String currency,
-    @required String contentType,
-    @required String contentId,
-    @required int numItems,
-    bool paymentInfoAvailable = false,
-  }) {
-    return logEvent(
-      name: eventNameInitiatedCheckout,
-      valueToSum: totalPrice,
-      parameters: {
-        paramNameContentType: contentType,
-        paramNameContentId: contentId,
-        paramNameNumItems: numItems,
-        paramNameCurrency: currency,
-        paramNamePaymentInfoAvailable:
-        paymentInfoAvailable ? paramValueYes : paramValueNo,
-      },
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------
-  //
-  // PRIVATE METHODS BELOW HERE
-
-  /// Creates a new map containing all of the key/value pairs from [parameters]
-  /// except those whose value is `null`.
-  Map<String, dynamic> _filterOutNulls(Map<String, dynamic> parameters) {
-    final Map<String, dynamic> filtered = <String, dynamic>{};
-    parameters.forEach((String key, dynamic value) {
-      if (value != null) {
-        filtered[key] = value;
-      }
-    });
-    return filtered;
-  }
+  
 }

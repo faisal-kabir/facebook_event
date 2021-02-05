@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () {
                   facebookEvent.logEvent(
                     name: 'button_clicked',
-                    parameters: {
+                    body: {
                       'button_id': 'the_clickme_button',
                     },
                   );
