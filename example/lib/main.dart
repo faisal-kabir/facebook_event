@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -19,7 +21,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //getHashKey();
+    if(Platform.isAndroid)
+      getHashKey();
   }
 
   @override
@@ -33,40 +36,12 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FutureBuilder(
-                future: facebookEvent.getAnonymousId(),
-                builder: (context, snapshot) {
-                  final id = snapshot.data ?? '???';
-                  return Text('Anonymous ID: $id');
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(hashKey,textAlign: TextAlign.center,),
-              ),
-              MaterialButton(
-                child: Text("Click me!"),
-                onPressed: () {
-                  facebookEvent.logEvent(
-                    name: 'button_clicked',
-                    body: {
-                      'button_id': 'the_clickme_button',
-                    },
-                  );
-                },
-              ),
               MaterialButton(
                 child: Text("Log AchieveLevelEvent"),
                 onPressed: () {
                   facebookEvent.logAchieveLevelEvent(
                     level: 'Payment',
                   );
-                },
-              ),
-              MaterialButton(
-                child: Text("Test purchase!"),
-                onPressed: () {
-                  facebookEvent.logPurchase(amount: 1, currency: "USD");
                 },
               ),
             ],
@@ -78,8 +53,6 @@ class _MyAppState extends State<MyApp> {
 
   void getHashKey()async{
     hashKey= await facebookEvent.getAndroidHashKey();
-    setState(() {
-
-    });
+    print(hashKey);
   }
 }
