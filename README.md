@@ -208,7 +208,7 @@ facebookEvent.logRateEvent(
 
 ```
 
-## Document
+## Documentation
 
 You will find all the [FB.LogAppEvent](https://developers.facebook.com/docs/unity/reference/current/FB.LogAppEvent/) details here.
 
