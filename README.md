@@ -1,8 +1,8 @@
 # facebook_event
 
-[![pub package](https://img.shields.io/pub/v/facebook_event.svg)](https://pub.dartlang.org/packages/facebook_app_events)
+[![pub package](https://img.shields.io/pub/v/facebook_event.svg)](https://pub.dev/packages/facebook_event)
 
-Flutter plugin for [Facebook  Event](https://developers.facebook.com/docs/app-events) and Analytics.
+Flutter plugin for [Facebook Event](https://developers.facebook.com/docs/app-events) and Analytics.
 
 > Facebook Events is a feature that can help you organize social gatherings via Facebook. You get a dedicated page for providing all the details of your event plus a range of tools to notify friends about it and keep track of who's going. Facebook Events are different from Facebook Groups and Facebook Pages.
 
@@ -86,11 +86,129 @@ AppEvents.logEvent(AppEvents.Name.init(rawValue: "Opened App Main VC"))
 ```
 [Example Code](https://github.com/faisal-kabir/facebook_event/blob/main/example/ios/Runner/AppDelegate.swift)
 
+### Get Android HashKey
+```
+final facebookEvent = FacebookEvent();
+String hashKey='Null';
+
+@override
+void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(Platform.isAndroid)
+      getHashKey();
+}
+
+void getHashKey()async{
+    hashKey= await facebookEvent.getAndroidHashKey();
+    print(hashKey);
+}
+```
+
+### All Events
+```
+final facebookEvent = FacebookEvent();
+
+// Get facebook application id
+facebookEvent.getApplicationId();
+
+/// An app is being activated, typically in the AppDelegate's applicationDidBecomeActive.
+facebookEvent.logActivatedApp();
+
+// This event when an app is being deactivated.
+facebookEvent.logDeactivatedApp();
+
+// Re-enables auto logging of app events after user consent
+facebookEvent.setAutoLogAppEventsEnabled(true);
+
+//submit user details
+facebookEvent.setUserData(
+  email:'email',
+  firstName:'first name',
+  lastName:'last name',
+  phone:'phone number',
+  dateOfBirth:'dob',
+  gender:'gender',
+  city:'city',
+  state:'state',
+  zip:'zip',
+  country:'country',
+);
+
+//submit custom event
+facebookEvent.logEvent(
+    name: 'name',
+    body: {'key':'value'},
+    valueToSum: 0
+);
+
+//submit contact details
+facebookEvent.logContactEvent(contact: 'number');
+
+// A user has viewed a form of content in the app.
+facebookEvent.logViewContent(
+  content: {'key':'value'},
+  id: 'id',
+  type: 'type'
+);
+
+//The user has completed a purchase. The FB.LogPurchase method is a shortcut for logging this event. specified currency.
+facebookEvent.logPurchase(
+  amount: 0,
+  currency: 'USD',
+  body: {'key':'value'}
+);
+
+//The user has achieved a level in the app.
+facebookEvent.logAchieveLevelEvent(
+  level: 'level'
+);
+
+// The user has entered their payment info.
+facebookEvent.logAddPaymentInfoEvent(
+  success: true
+);
+
+// The user has added an item to their cart. The valueToSum passed should be the item's price.
+facebookEvent.logAddToCartEvent(
+  price:0,
+  contentData: 'contentData',
+  contentType: 'contentType',
+  contentId: 'contentId',
+  currency: 'USD'
+);
+
+// This event when the user has completed registration with the app.
+// A user has completed registration with the app.
+facebookEvent.logCompleteRegistrationEvent(
+  registrationMethod:'registrationMethod',
+  name: 'name',
+  currency: 'USD'
+);
+
+// The user has entered the checkout process. The valueToSum passed should be the total price in the cart.
+facebookEvent.logInitiateCheckoutEvent(
+  totalPrice:0,
+  contentData: 'contentData',
+  contentType: 'contentType',
+  contentId: 'contentId',
+  currency: 'USD',
+  numItems: 1,
+  paymentInfoAvailable: true
+);
+
+// The user has rated an item in the app. The valueToSum passed should be the numeric rating.
+facebookEvent.logRateEvent(
+  ratingGiven:5,
+  contentData: 'contentData',
+  contentType: 'contentType',
+  contentId: 'contentId',
+  maxRatingValue: 5
+);
+
+```
+
 ## Document
 
-Please read the official documentation for
-[iOS](https://developers.facebook.com/docs/reference/iossdk/current/FBSDKCoreKit/classes/fbsdkappevents.html)
-and
-[Android](https://developers.facebook.com/docs/reference/androidsdk/current/facebook/com/facebook/appevents/appeventslogger.html) respectively for the correct and expected behavior. Please
-[report an issue](https://github.com/faisal-kabir/facebook_event/issues)
-If you find anything that is not working according to official documentation.
+You will find all the [FB.LogAppEvent](https://developers.facebook.com/docs/unity/reference/current/FB.LogAppEvent/) details here.
+

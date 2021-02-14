@@ -125,7 +125,7 @@ class FacebookEvent {
   
 
 
-  ///
+  /// Contact event
   Future<void> logContactEvent({
     @required String contact,
   }) {
