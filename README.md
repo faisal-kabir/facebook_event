@@ -121,7 +121,7 @@ facebookEvent.logDeactivatedApp();
 // Re-enables auto logging of app events after user consent
 facebookEvent.setAutoLogAppEventsEnabled(true);
 
-//submit user details
+// Submit user details
 facebookEvent.setUserData(
   email:'email',
   firstName:'first name',
@@ -135,14 +135,14 @@ facebookEvent.setUserData(
   country:'country',
 );
 
-//submit custom event
+// Submit custom event
 facebookEvent.logEvent(
     name: 'name',
     body: {'key':'value'},
     valueToSum: 0
 );
 
-//submit contact details
+// Submit contact details
 facebookEvent.logContactEvent(contact: 'number');
 
 // A user has viewed a form of content in the app.
@@ -152,14 +152,14 @@ facebookEvent.logViewContent(
   type: 'type'
 );
 
-//The user has completed a purchase. The FB.LogPurchase method is a shortcut for logging this event. specified currency.
+// The user has completed a purchase. The FB.LogPurchase method is a shortcut for logging this event. specified currency.
 facebookEvent.logPurchase(
   amount: 0,
   currency: 'USD',
   body: {'key':'value'}
 );
 
-//The user has achieved a level in the app.
+// The user has achieved a level in the app.
 facebookEvent.logAchieveLevelEvent(
   level: 'level'
 );
