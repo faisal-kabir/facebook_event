@@ -14,8 +14,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  static final facebookEvent = FacebookEvent();
+  static FacebookEvent? facebookEvent;
   String hashKey='Null';
+
+
+  _MyAppState(){
+    facebookEvent = FacebookEvent();
+  }
 
   @override
   void initState() {
@@ -36,10 +41,10 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              MaterialButton(
+              ElevatedButton(
                 child: Text("Log AchieveLevelEvent"),
                 onPressed: () {
-                  facebookEvent.logAchieveLevelEvent(
+                  facebookEvent!.logAchieveLevelEvent(
                     level: 'Payment',
                   );
                 },
@@ -52,7 +57,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void getHashKey()async{
-    hashKey= await facebookEvent.getAndroidHashKey();
+    hashKey = (await facebookEvent!.getAndroidHashKey())!;
     print(hashKey);
   }
 }

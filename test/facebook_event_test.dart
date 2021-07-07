@@ -5,7 +5,7 @@ import 'package:facebook_event/facebook_event.dart';
 void main() {
   const channel = MethodChannel(channelName);
   final facebookEvent = FacebookEvent();
-  MethodCall methodCall;
+  MethodCall? methodCall;
 
   setUp(() async {
     channel.setMockMethodCallHandler((MethodCall m) async {
